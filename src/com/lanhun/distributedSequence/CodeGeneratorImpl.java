@@ -51,6 +51,9 @@ public class CodeGeneratorImpl implements CodeGenerator {
 	public String generate(String prefix, String format, int len) {
 		String storeType = "seq:" + prefix;
 		Jedis jedis = jedisPool.getResource();
+		if(jedis.setnx(storeType, 0+"")>0){
+			jedis.expire(storeType, 3600*24);
+		}
 		Long i = jedis.incr(storeType);
 		jedis.close();
 		List<String> time = jedis.time();
