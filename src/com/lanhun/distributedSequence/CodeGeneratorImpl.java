@@ -6,12 +6,13 @@ import java.util.List;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.util.Pool;
 
 public class CodeGeneratorImpl implements CodeGenerator {
 
-	private JedisPool jedisPool;
+	private Pool<Jedis> jedisPool;
 
-	public void setJedisPool(JedisPool jedisPool) {
+	public void setJedisPool(Pool<Jedis> jedisPool) {
 		this.jedisPool = jedisPool;
 	}
 	public String generate(String prefix) {
