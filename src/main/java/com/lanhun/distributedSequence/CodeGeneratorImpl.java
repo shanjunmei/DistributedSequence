@@ -44,6 +44,6 @@ public class CodeGeneratorImpl implements CodeGenerator {
 	}
 
 	public String generate(String prefix, String format) {
-		return generate(prefix, format);
+		return generate(prefix, format,8);
 	}
 }
