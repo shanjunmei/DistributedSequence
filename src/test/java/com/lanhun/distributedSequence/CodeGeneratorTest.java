@@ -48,7 +48,7 @@ public class CodeGeneratorTest {
 			code = generator.generate("O2O",16);
 			codes.add(code);
 			codesDistinck.add(code);
-			//System.out.println(code);
+			System.out.println(code);
 		}
 		t = System.currentTimeMillis() - t;
 		System.out.println("take" + t + " ms");
