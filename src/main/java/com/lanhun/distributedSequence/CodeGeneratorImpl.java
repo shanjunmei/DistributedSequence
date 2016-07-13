@@ -22,12 +22,17 @@ public class CodeGeneratorImpl implements CodeGenerator {
 	}
 
 	/**
-	 * (非 Javadoc) 
-	* <p>Title: generate</p> 
-	* <p>Description:自动追加yyyyMMdd </p> 
-	* @param prefix
-	* @return 
-	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String)
+	 * (非 Javadoc)
+	 * <p>
+	 * Title: generate
+	 * </p>
+	 * <p>
+	 * Description:自动追加yyyyMMdd
+	 * </p>
+	 * 
+	 * @param prefix
+	 * @return
+	 * @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String)
 	 */
 	public String generate(String prefix) {
 		return generate(prefix, "yyyyMMdd");
@@ -123,27 +128,28 @@ public class CodeGeneratorImpl implements CodeGenerator {
 	}
 
 	/**
-	 * (非 Javadoc) 
-	* <p>Title: generate</p> 
-	* <p>Description:默认四位随机数 </p> 
-	* @param prefix
-	* @param format
-	* @return 
-	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String, java.lang.String)
+	 * (非 Javadoc)
+	 * <p>
+	 * Title: generate
+	 * </p>
+	 * <p>
+	 * Description:默认四位随机数
+	 * </p>
+	 * 
+	 * @param prefix
+	 * @param format
+	 * @return
+	 * @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String,
+	 *      java.lang.String)
 	 */
 	public String generate(String prefix, String format) {
-		int len=4;
-		if(prefix!=null){
-			len=len+prefix.length();
+		int len = 4;
+		if (prefix != null) {
+			len = len + prefix.length();
 		}
-		if(format!=null){
-			len=len+format.length();
+		if (format != null) {
+			len = len + format.length();
 		}
 		return generate(prefix, format, len);
-	}
-
-	public static void main(String[] args) {
-		String code = format(2222L, 3);
-		System.out.println(code);
 	}
 }
