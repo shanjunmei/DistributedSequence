@@ -102,6 +102,8 @@ public class CodeGeneratorImpl implements CodeGenerator {
 			String random = format(i, ranLen);
 			if (random.length() > ranLen) {
 				jedis.del(storeType);
+				jedis.close();
+				hasClose=true;
 				return generate(prefix, format, len);
 			}
 			if (format == null || format.trim().length() == 0) {
