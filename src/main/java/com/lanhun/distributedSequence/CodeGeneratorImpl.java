@@ -23,10 +23,29 @@ public class CodeGeneratorImpl implements CodeGenerator {
 
 	}
 
+	/**
+	 * (非 Javadoc) 
+	* <p>Title: generate</p> 
+	* <p>Description:自动追加yyyyMMdd，长度为len的随机数 </p> 
+	* @param prefix
+	* @param len
+	* @return 
+	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String, int)
+	 */
 	public String generate(String prefix, int len) {
 		return generate(prefix, "yyyyMMdd", len);
 	}
 
+	/**
+	 * (非 Javadoc) 
+	* <p>Title: generate</p> 
+	* <p>Description: 可优化点，时间获取，重置方式</p> 
+	* @param prefix
+	* @param format
+	* @param len
+	* @return 
+	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String, java.lang.String, int)
+	 */
 	public String generate(String prefix, String format, int len) {
 		String storeType = "seq:" + prefix;
 		Jedis jedis = null;
