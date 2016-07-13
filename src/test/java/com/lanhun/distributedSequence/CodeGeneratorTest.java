@@ -44,20 +44,16 @@ public class CodeGeneratorTest {
 		Set<String> codesDistinck=new HashSet<String>();
 		long t = System.currentTimeMillis();
 		String code = null;
-		StopWatch watch=new StopWatch();
-		for (int i = 0; i < 1; i++) {
-			watch.start("code generate");
-			code = generator.generate("O2O");
-			watch.stop();
-			System.out.println(watch.prettyPrint());
+		for (int i = 0; i < 10000; i++) {
+			code = generator.generate("O2O",16);
 			codes.add(code);
 			codesDistinck.add(code);
 			//System.out.println(code);
 		}
 		t = System.currentTimeMillis() - t;
-		//System.out.println("take" + t + " ms");
-		//System.out.println("total " + codes.size() + " codes");
-		//System.out.println("uniq total " + codesDistinck.size() + " codes");
+		System.out.println("take" + t + " ms");
+		System.out.println("total " + codes.size() + " codes");
+		System.out.println("uniq total " + codesDistinck.size() + " codes");
 	}
 
 	private static JedisPool createJedisPool(String host, int port) {

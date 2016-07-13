@@ -6,6 +6,13 @@ import java.util.List;
 import redis.clients.jedis.Jedis;
 import redis.clients.util.Pool;
 
+/**
+ * 
+ * @ClassName: CodeGeneratorImpl
+ * @Description: 基于redis的编码生成实现
+ * @author 李淼淼 445052471@qq.com
+ * @date 2016年7月13日 上午11:14:43
+ */
 public class CodeGeneratorImpl implements CodeGenerator {
 
 	private Pool<Jedis> jedisPool;
@@ -14,6 +21,14 @@ public class CodeGeneratorImpl implements CodeGenerator {
 		this.jedisPool = jedisPool;
 	}
 
+	/**
+	 * (非 Javadoc) 
+	* <p>Title: generate</p> 
+	* <p>Description:自动追加yyyyMMdd </p> 
+	* @param prefix
+	* @return 
+	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String)
+	 */
 	public String generate(String prefix) {
 		return generate(prefix, "yyyyMMdd");
 	}
@@ -24,45 +39,78 @@ public class CodeGeneratorImpl implements CodeGenerator {
 	}
 
 	/**
-	 * (非 Javadoc) 
-	* <p>Title: generate</p> 
-	* <p>Description:自动追加yyyyMMdd，长度为len的随机数 </p> 
-	* @param prefix
-	* @param len
-	* @return 
-	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String, int)
+	 * (非 Javadoc)
+	 * <p>
+	 * Title: generate
+	 * </p>
+	 * <p>
+	 * Description:自动追加yyyyMMdd
+	 * </p>
+	 * 
+	 * @param prefix
+	 * @param len
+	 * @return
+	 * @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String,
+	 *      int)
 	 */
 	public String generate(String prefix, int len) {
 		return generate(prefix, "yyyyMMdd", len);
 	}
 
 	/**
-	 * (非 Javadoc) 
-	* <p>Title: generate</p> 
-	* <p>Description: 可优化点，时间获取，重置方式</p> 
-	* @param prefix
-	* @param format
-	* @param len
-	* @return 
-	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String, java.lang.String, int)
+	 * (非 Javadoc)
+	 * <p>
+	 * Title: generate
+	 * </p>
+	 * <p>
+	 * Description: 可优化点，时间获取，重置方式
+	 * </p>
+	 * 
+	 * @param prefix
+	 * @param format
+	 * @param len
+	 * @return
+	 * @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String,
+	 *      java.lang.String, int)
 	 */
 	public String generate(String prefix, String format, int len) {
 		String storeType = "seq:" + prefix;
 		Jedis jedis = null;
 		boolean hasClose = false;
+		int ranLen = len;
+		if (prefix != null) {
+			ranLen = ranLen - prefix.length();
+		}
+		if (format != null) {
+			ranLen = ranLen - format.length();
+		}
+		if (ranLen < 1) {
+			throw new RuntimeException("unexpect len");
+		}
 		try {
 			jedis = jedisPool.getResource();
-			if (jedis.setnx(storeType, 0 + "") > 0) {
-				jedis.expire(storeType, 3600 * 24);
-			}
+			/*
+			 * if (jedis.setnx(storeType, 0 + "") > 0) { jedis.expire(storeType,
+			 * 3600 * 24); }
+			 */
 			Long i = jedis.incr(storeType);
-			List<String> time = jedis.time();
-			jedis.close();
-			hasClose = true;
-			long t = Long.parseLong(time.get(0) + "000");
-			long m = Long.parseLong(time.get(1));
-			t = t + m / 1000;
-			return String.format("%s%s%0" + len + "d", prefix, DateUtils.format(format, new Date(t)), i);
+			String random = format(i, ranLen);
+			if (random.length() > ranLen) {
+				jedis.del(storeType);
+				return generate(prefix, format, len);
+			}
+			if (format == null || format.trim().length() == 0) {
+				return String.format("%s%s", prefix, random);
+			} else {
+				List<String> time = jedis.time();
+				jedis.close();
+				hasClose = true;
+				long t = Long.parseLong(time.get(0) + "000");
+				long m = Long.parseLong(time.get(1));
+				t = t + m / 1000;
+				return String.format("%s%s%s", prefix, DateUtils.format(format, new Date(t)), random);
+			}
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -74,7 +122,28 @@ public class CodeGeneratorImpl implements CodeGenerator {
 		}
 	}
 
+	/**
+	 * (非 Javadoc) 
+	* <p>Title: generate</p> 
+	* <p>Description:默认四位随机数 </p> 
+	* @param prefix
+	* @param format
+	* @return 
+	* @see com.lanhun.distributedSequence.CodeGenerator#generate(java.lang.String, java.lang.String)
+	 */
 	public String generate(String prefix, String format) {
-		return generate(prefix, format, 8);
+		int len=4;
+		if(prefix!=null){
+			len=len+prefix.length();
+		}
+		if(format!=null){
+			len=len+format.length();
+		}
+		return generate(prefix, format, len);
+	}
+
+	public static void main(String[] args) {
+		String code = format(2222L, 3);
+		System.out.println(code);
 	}
 }
