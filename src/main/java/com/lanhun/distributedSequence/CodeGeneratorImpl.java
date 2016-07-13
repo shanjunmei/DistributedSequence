@@ -29,21 +29,33 @@ public class CodeGeneratorImpl implements CodeGenerator {
 
 	public String generate(String prefix, String format, int len) {
 		String storeType = "seq:" + prefix;
-		Jedis jedis = jedisPool.getResource();
-		if (jedis.setnx(storeType, 0 + "") > 0) {
-			jedis.expire(storeType, 3600 * 24);
+		Jedis jedis = null;
+		boolean hasClose = false;
+		try {
+			jedis = jedisPool.getResource();
+			if (jedis.setnx(storeType, 0 + "") > 0) {
+				jedis.expire(storeType, 3600 * 24);
+			}
+			Long i = jedis.incr(storeType);
+			List<String> time = jedis.time();
+			jedis.close();
+			hasClose = true;
+			long t = Long.parseLong(time.get(0) + "000");
+			long m = Long.parseLong(time.get(1));
+			t = t + m / 1000;
+			return String.format("%s%s%0" + len + "d", prefix, DateUtils.format(format, new Date(t)), i);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (!hasClose) {
+				if (jedis != null) {
+					jedis.close();
+				}
+			}
 		}
-		Long i = jedis.incr(storeType);
-		jedis.close();
-		List<String> time = jedis.time();
-		long t = Long.parseLong(time.get(0) + "000");
-		long m = Long.parseLong(time.get(1));
-		t = t + m / 1000;
-		return String.format("%s%s%0" + len + "d", prefix,
-				DateUtils.format(format, new Date(t)), i);
 	}
 
 	public String generate(String prefix, String format) {
-		return generate(prefix, format,8);
+		return generate(prefix, format, 8);
 	}
 }
